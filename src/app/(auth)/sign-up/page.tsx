@@ -1,7 +1,9 @@
 import React from 'react';
 
-const page = (props: any) => {
-  return <>Text</>;
+import SignUpForm from '@/client/features/auth/SignUp/SignUpForm';
+
+const page = () => {
+  return <SignUpForm />;
 };
 
 export default page;
