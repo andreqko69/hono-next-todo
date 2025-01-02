@@ -1,16 +1,16 @@
 import type { NextRequest } from 'next/server';
 
-import { Routes } from '@/common/navigation/constants';
+import { Route } from '@/shared/navigation/constants';
 
 export function middleware(request: NextRequest) {
   const currentUser = request.cookies.get('currentUser')?.value;
   const path = request.nextUrl.pathname;
-  const isSignIn = path.startsWith(Routes.SignIn);
-  const isSignUp = path.startsWith(Routes.SignUp);
+  const isSignIn = path.startsWith(Route.SignIn);
+  const isSignUp = path.startsWith(Route.SignUp);
   const isAuth = isSignIn || isSignUp;
 
   if (!currentUser && !isAuth) {
-    return Response.redirect(new URL(Routes.SignIn, request.url));
+    return Response.redirect(new URL(Route.SignIn, request.url));
   }
 }
 

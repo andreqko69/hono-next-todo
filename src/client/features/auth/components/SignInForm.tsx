@@ -2,7 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import React from 'react';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,20 +19,20 @@ import {
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
-import FormContainer from '@/client/features/auth/components/FormContainer/FormContainer';
-import { Routes } from '@/common/navigation/constants';
-
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' }),
-  rememberMe: z.boolean(),
-});
+import FormContainer from '@/client/features/auth/components/FormContainer';
+import { useToast } from '@/client/hooks/use-toast';
+import {
+  Route,
+  SearchParamKey,
+  StatusValue,
+} from '@/shared/navigation/constants';
+import { signInSchema } from '@/shared/validation/auth/schema';
 
 const SignInForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const form = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -39,8 +40,29 @@ const SignInForm = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  useEffect(() => {
+    const status = searchParams.get(SearchParamKey.Status);
+
+    if (status === StatusValue.SignupSuccess) {
+      console.log('Toast');
+      toast({
+        title: 'Signup successful!',
+        description: 'You can now login with your credentials.',
+        variant: 'default',
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onSubmit = (data: z.infer<typeof signInSchema>) => {
     console.log('data:', data);
+    fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...data, password: '123' }),
+    });
   };
 
   return (
@@ -112,7 +134,7 @@ const SignInForm = () => {
 
               <div>
                 <Button type="submit" variant="default" className="w-full">
-                  Register
+                  Login
                 </Button>
               </div>
             </form>
@@ -120,7 +142,7 @@ const SignInForm = () => {
 
           <div>
             Don&#39;t have an account?{' '}
-            <Link text="Create one" href={Routes.SignUp} />
+            <Link text="Create one" href={Route.SignUp} />
           </div>
         </div>
         <div className="hidden md:flex md:w-[50%]">

@@ -1,9 +1,9 @@
 import NextLink from 'next/link';
 import React from 'react';
 
-import { Routes } from '@/common/navigation/constants';
+import { Route } from '@/shared/navigation/constants';
 
-const Link = ({ text, href }: { text: string; href: Routes }) => {
+const Link = ({ text, href }: { text: string; href: Route }) => {
   return (
     <NextLink href={href} className="text-color-text-link">
       {text}

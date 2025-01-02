@@ -1,1 +1,1 @@
-export { TodoTable } from '@/server/features/todo/schema';
+export { users } from '@/server/features/user/schema';

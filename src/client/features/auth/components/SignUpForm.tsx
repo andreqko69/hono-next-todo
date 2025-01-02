@@ -2,7 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import React from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,34 +19,26 @@ import {
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
-import FormContainer from '@/client/features/auth/components/FormContainer/FormContainer';
-import { Routes } from '@/common/navigation/constants';
+import { Spinner } from '@/client/components/ui/spinner';
+import FormContainer from '@/client/features/auth/components/FormContainer';
+import { useToast } from '@/client/hooks/use-toast';
+import { CustomAPIError } from '@/client/lib/errors';
+import { postApi } from '@/client/lib/fetch-api';
+import {
+  Route,
+  SearchParamKey,
+  StatusValue,
+} from '@/shared/navigation/constants';
+import { signUpSchema } from '@/shared/validation/auth/schema';
 
-const formSchema = z
-  .object({
-    firstName: z
-      .string()
-      .nonempty({ message: 'First name must be at least 1 character' }),
-    lastName: z
-      .string()
-      .nonempty({ message: 'Last name must be at least 1 character' }),
-    email: z.string().email(),
-    password: z
-      .string()
-      .min(8, { message: 'Password must be at least 8 characters' }),
-    confirmPassword: z.string(),
-    terms: z.boolean().refine((value) => value, {
-      message: 'You must accept the terms and conditions',
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
+type FormFields = z.infer<typeof signUpSchema>;
 
 const SignUpForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+  const form = useForm<FormFields>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -56,8 +49,49 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log('data:', data);
+  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+    try {
+      setIsSubmitting(true);
+
+      await postApi('/api/v1/auth/register', data);
+
+      router.push(
+        `${Route.SignIn}?${SearchParamKey.Status}=${StatusValue.SignupSuccess}`
+      );
+    } catch (error: unknown) {
+      if (error instanceof CustomAPIError) {
+        if (Array.isArray(error.details)) {
+          error.details.forEach((e) => {
+            form.setError(e.fieldName as keyof FormFields, {
+              type: 'server',
+              message: e.error,
+            });
+          });
+
+          return;
+        }
+
+        if (error?.details?.fieldName) {
+          form.setError(error.details.fieldName as keyof FormFields, {
+            type: 'server',
+            message: error.message,
+          });
+
+          return;
+        }
+      }
+
+      const description =
+        error instanceof Error ? error.message : 'An unknown error occurred';
+
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -197,7 +231,13 @@ const SignUpForm = () => {
               />
 
               <div>
-                <Button type="submit" variant="default" className="w-full">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="default"
+                  className="w-full"
+                >
+                  {isSubmitting && <Spinner size="sm" />}
                   Register
                 </Button>
               </div>
@@ -205,8 +245,7 @@ const SignUpForm = () => {
           </Form>
 
           <div>
-            Already have an account?{' '}
-            <Link text="Sign In" href={Routes.SignIn} />
+            Already have an account? <Link text="Sign In" href={Route.SignIn} />
           </div>
         </div>
       </div>
