@@ -22,8 +22,8 @@ import { Label } from '@/client/components/ui/label';
 import { Spinner } from '@/client/components/ui/spinner';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
-import { CustomAPIError } from '@/client/lib/errors';
 import { postApi } from '@/client/lib/fetch-api';
+import { CustomAPIError } from '@/client/utils/errors';
 import {
   Route,
   SearchParamKey,

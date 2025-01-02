@@ -1,4 +1,4 @@
-import { CustomAPIError } from '@/client/lib/errors';
+import { CustomAPIError } from '@/client/utils/errors';
 
 type FetchOptions = {
   cache?: RequestCache;

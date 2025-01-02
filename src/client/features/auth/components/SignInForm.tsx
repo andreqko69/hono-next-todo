@@ -150,8 +150,8 @@ const SignInForm = () => {
             className="w-full"
             src="/images/auth/sign-in.png"
             alt="Sign in"
-            width={433}
-            height={652}
+            width={468}
+            height={468}
           />
         </div>
       </div>
