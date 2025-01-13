@@ -1,26 +1,37 @@
+import { HTTPException } from 'hono/http-exception';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 
-export class AppError extends Error {
+import { FieldError } from '@/shared/validation/errors';
+
+type ExtraExceptionData = { fieldErrors?: FieldError[] };
+
+export class AppError extends HTTPException {
   constructor(
     public message: string,
     public statusCode: ContentfulStatusCode,
-    public details?: unknown
+    public extraExceptionData?: ExtraExceptionData
   ) {
-    super(message);
+    super(statusCode, { message });
     this.name = 'AppError';
   }
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, details?: unknown) {
-    super(message, 400, details);
+  constructor(
+    message: string,
+    { fieldErrors }: { fieldErrors?: FieldError[] } = {}
+  ) {
+    super(message, 400, { fieldErrors });
     this.name = 'ValidationError';
   }
 }
 
 export class AuthError extends AppError {
-  constructor(message: string, details?: unknown) {
-    super(message, 401, details);
+  constructor(
+    message: string,
+    { fieldErrors }: { fieldErrors?: FieldError[] } = {}
+  ) {
+    super(message, 401, { fieldErrors });
     this.name = 'AuthError';
   }
 }

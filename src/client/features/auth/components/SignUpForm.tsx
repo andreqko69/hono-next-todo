@@ -60,25 +60,14 @@ const SignUpForm = () => {
       );
     } catch (error: unknown) {
       if (error instanceof CustomAPIError) {
-        if (Array.isArray(error.details)) {
-          error.details.forEach((e) => {
-            form.setError(e.fieldName as keyof FormFields, {
-              type: 'server',
-              message: e.error,
-            });
-          });
-
-          return;
-        }
-
-        if (error?.details?.fieldName) {
-          form.setError(error.details.fieldName as keyof FormFields, {
+        error.fieldErrors?.forEach((e) => {
+          form.setError(e.fieldName as keyof FormFields, {
             type: 'server',
-            message: error.message,
+            message: e.message,
           });
+        });
 
-          return;
-        }
+        return;
       }
 
       const description =

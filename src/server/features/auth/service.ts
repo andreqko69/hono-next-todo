@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 
 import UserService from '@/server/features/user/service';
-import { AuthError, ValidationError } from '@/server/utils/errors';
+import { AuthError } from '@/server/utils/errors';
+import { AuthErrorMessage } from '@/shared/validation/auth/constants';
 import { SignInData, SignUpData } from '@/shared/validation/auth/schema';
 
 const userService = new UserService();
@@ -9,28 +10,27 @@ const userService = new UserService();
 class AuthService {
   private readonly saltRounds = 10;
 
-  async signUp(data: SignUpData) {
-    const existingUser = await userService.findByEmail(data.email);
+  async signUp({ email, password, firstName, lastName }: SignUpData) {
+    const existingUser = await userService.findByEmail(email);
 
     if (existingUser) {
-      throw new AuthError('User with this email already exists', {
-        fieldName: 'email',
+      throw new AuthError(AuthErrorMessage.UserWithThisEmailAlreadyExists, {
+        fieldErrors: [
+          {
+            message: AuthErrorMessage.UserWithThisEmailAlreadyExists,
+            fieldName: 'email',
+          },
+        ],
       });
     }
 
-    if (!data.terms) {
-      throw new ValidationError('You must accept the terms and conditions', {
-        fieldName: 'terms',
-      });
-    }
-
-    const passwordHash = await bcrypt.hash(data.password, this.saltRounds);
+    const passwordHash = await bcrypt.hash(password, this.saltRounds);
 
     return userService.create({
-      email: data.email,
+      email,
       passwordHash,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      firstName,
+      lastName,
     });
   }
 
@@ -38,7 +38,7 @@ class AuthService {
     const user = await userService.findByEmail(data.email);
 
     if (!user) {
-      throw new AuthError('Invalid credentials');
+      throw new AuthError(AuthErrorMessage.InvalidCredentials);
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -47,11 +47,11 @@ class AuthService {
     );
 
     if (!isValidPassword) {
-      throw new AuthError('Invalid credentials');
+      throw new AuthError(AuthErrorMessage.InvalidCredentials);
     }
 
     if (!user.isActive) {
-      throw new AuthError('Account is inactive');
+      throw new AuthError(AuthErrorMessage.AccountIsInactive);
     }
   }
 }

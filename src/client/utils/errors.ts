@@ -1,15 +1,12 @@
-interface ErrorDetails {
-  fieldName: string;
-  error?: string;
-}
+import { FieldError } from '@/shared/validation/errors';
 
 export class CustomAPIError extends Error {
   constructor(
     message: string,
-    public details?: ErrorDetails | ErrorDetails[]
+    public fieldErrors?: FieldError[]
   ) {
     super(message);
     this.name = 'CustomAPIError';
-    this.details = details;
+    this.fieldErrors = fieldErrors;
   }
 }

@@ -2,16 +2,17 @@ import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 import { users } from '@/server/features/user/schema';
+import { AuthErrorMessage } from '@/shared/validation/auth/constants';
 
 export const insertUserSchema = createInsertSchema(users, {
-  email: z.string().email('Invalid email format').trim(),
-  firstName: z.string().min(2, 'First name too short').trim(),
-  lastName: z.string().min(2, 'Last name too short').trim(),
+  email: z.string().email(AuthErrorMessage.InvalidEmailFormat).trim(),
+  firstName: z.string().min(2, AuthErrorMessage.FirstNameIsTooShort).trim(),
+  lastName: z.string().min(2, AuthErrorMessage.LastNameIsTooShort).trim(),
 });
 
 const passwordSchema = z
   .string()
-  .min(8, 'Password must be at least 8 characters');
+  .min(8, AuthErrorMessage.PasswordMustBeAtLeast8Characters);
 
 export const signUpSchema = insertUserSchema
   .omit({
@@ -23,21 +24,31 @@ export const signUpSchema = insertUserSchema
   .extend({
     password: passwordSchema,
     confirmPassword: z.string(),
-    terms: z.boolean(),
+    terms: z.boolean().refine((data) => data, {
+      message: AuthErrorMessage.YouMustAcceptTheTermsAndConditions,
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: AuthErrorMessage.PasswordsDoNotMatch,
     path: ['confirmPassword'],
   });
 
 export const signInSchema = z.object({
-  email: z.string().email('Invalid email format').toLowerCase().trim(),
-  password: z.string().min(1, 'Password is required'),
+  email: z
+    .string()
+    .email(AuthErrorMessage.InvalidEmailFormat)
+    .toLowerCase()
+    .trim(),
+  password: z.string().min(6, AuthErrorMessage.PasswordIsRequired),
   rememberMe: z.boolean().optional().default(false),
 });
 
 export const passwordResetRequestSchema = z.object({
-  email: z.string().email('Invalid email format').toLowerCase().trim(),
+  email: z
+    .string()
+    .email(AuthErrorMessage.InvalidEmailFormat)
+    .toLowerCase()
+    .trim(),
 });
 
 export const passwordResetSchema = z
@@ -47,7 +58,7 @@ export const passwordResetSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: AuthErrorMessage.PasswordsDoNotMatch,
     path: ['confirmPassword'],
   });
 

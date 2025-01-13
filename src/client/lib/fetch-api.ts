@@ -39,10 +39,10 @@ async function fetchApi<T>(
 
     const resBody = await res.json();
 
-    if (!res.ok || resBody.error) {
+    if (!res.ok || resBody.success === false) {
       throw new CustomAPIError(
         resBody.error ?? `API error: ${res.status}`,
-        resBody.details
+        resBody.fieldErrors
       );
     }
 

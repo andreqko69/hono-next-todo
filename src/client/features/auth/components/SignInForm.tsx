@@ -2,8 +2,8 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -19,8 +19,11 @@ import {
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
+import { Spinner } from '@/client/components/ui/spinner';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
+import { postApi } from '@/client/lib/fetch-api';
+import { CustomAPIError } from '@/client/utils/errors';
 import {
   Route,
   SearchParamKey,
@@ -28,7 +31,11 @@ import {
 } from '@/shared/navigation/constants';
 import { signInSchema } from '@/shared/validation/auth/schema';
 
+type FormFields = z.infer<typeof signInSchema>;
+
 const SignInForm = () => {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -44,25 +51,46 @@ const SignInForm = () => {
     const status = searchParams.get(SearchParamKey.Status);
 
     if (status === StatusValue.SignupSuccess) {
-      console.log('Toast');
       toast({
         title: 'Signup successful!',
         description: 'You can now login with your credentials.',
         variant: 'default',
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, toast]);
 
-  const onSubmit = (data: z.infer<typeof signInSchema>) => {
-    console.log('data:', data);
-    fetch('/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...data, password: '123' }),
-    });
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    try {
+      setIsSubmitting(true);
+
+      await postApi('/api/v1/auth/login', data);
+
+      router.push(
+        `${Route.SignIn}?${SearchParamKey.Status}=${StatusValue.SignupSuccess}`
+      );
+    } catch (error: unknown) {
+      if (error instanceof CustomAPIError) {
+        error.fieldErrors?.forEach((e) => {
+          form.setError(e.fieldName as keyof FormFields, {
+            type: 'server',
+            message: e.message,
+          });
+        });
+
+        return;
+      }
+
+      const description =
+        error instanceof Error ? error.message : 'An unknown error occurred';
+
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -133,7 +161,13 @@ const SignInForm = () => {
               />
 
               <div>
-                <Button type="submit" variant="default" className="w-full">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="default"
+                  className="w-full"
+                >
+                  {isSubmitting && <Spinner size="sm" />}
                   Login
                 </Button>
               </div>

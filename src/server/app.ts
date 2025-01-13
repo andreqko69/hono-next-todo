@@ -20,8 +20,8 @@ app.onError((err, c) => {
       {
         success: false,
         error: 'Validation error',
-        details: err.errors.map((e) => ({
-          error: e.message,
+        fieldErrors: err.errors.map((e) => ({
+          message: e.message,
           fieldName: e.path.join('.'),
         })),
       },
@@ -35,7 +35,9 @@ app.onError((err, c) => {
       {
         success: false,
         error: err.message,
-        details: err.details,
+        ...(err.extraExceptionData
+          ? { fieldErrors: err.extraExceptionData.fieldErrors }
+          : {}),
       },
       err.statusCode
     );
