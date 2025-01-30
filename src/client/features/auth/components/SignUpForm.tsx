@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import useSWRMutation from 'swr/mutation';
 import { z } from 'zod';
 
 import Link from '@/client/components/Link/Link';
@@ -20,10 +21,10 @@ import {
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
 import { Spinner } from '@/client/components/ui/spinner';
+import { signUp } from '@/client/features/auth/api/mutations';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
-import { postApi } from '@/client/lib/fetch-api';
-import { CustomAPIError } from '@/client/utils/errors';
+import ErrorHandler from '@/client/lib/ErrorHandler';
 import {
   Route,
   SearchParamKey,
@@ -49,35 +50,19 @@ const SignUpForm = () => {
     },
   });
 
+  const { trigger } = useSWRMutation('/api/v1/auth/register', signUp);
+
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     try {
       setIsSubmitting(true);
 
-      await postApi('/api/v1/auth/register', data);
+      await trigger(data);
 
       router.push(
         `${Route.SignIn}?${SearchParamKey.Status}=${StatusValue.SignupSuccess}`
       );
     } catch (error: unknown) {
-      if (error instanceof CustomAPIError) {
-        error.fieldErrors?.forEach((e) => {
-          form.setError(e.fieldName as keyof FormFields, {
-            type: 'server',
-            message: e.message,
-          });
-        });
-
-        return;
-      }
-
-      const description =
-        error instanceof Error ? error.message : 'An unknown error occurred';
-
-      toast({
-        title: 'Error',
-        variant: 'destructive',
-        description,
-      });
+      ErrorHandler.handleFormError({ error, form, toast });
     } finally {
       setIsSubmitting(false);
     }

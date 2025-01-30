@@ -1,18 +1,17 @@
 import { CustomAPIError } from '@/client/utils/errors';
 
-type FetchOptions = {
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+export type FetchOptions = {
   cache?: RequestCache;
   revalidate?: number;
   tags?: string[];
   headers?: HeadersInit;
-  method?: string;
+  method?: HttpMethod;
   body?: BodyInit | null;
 };
 
-async function fetchApi<T>(
-  url: string,
-  options: FetchOptions = {}
-): Promise<T> {
+async function fetchApi<T>(url: string, options?: FetchOptions): Promise<T> {
   const {
     cache = 'force-cache',
     revalidate,
@@ -20,7 +19,7 @@ async function fetchApi<T>(
     headers = {},
     method = 'GET',
     body = null,
-  } = options;
+  } = options ?? {};
 
   try {
     const res = await fetch(url, {
@@ -53,14 +52,18 @@ async function fetchApi<T>(
   }
 }
 
-async function postApi<T, B = unknown>(
-  url: string,
-  body: B,
-  options: Omit<FetchOptions, 'cache' | 'method' | 'body'> = {}
-): Promise<T> {
+async function postApi<T, B = unknown>({
+  url,
+  body,
+  options = {},
+}: {
+  url: string;
+  body: B;
+  options?: Omit<FetchOptions, 'cache' | 'method' | 'body'>;
+}): Promise<T> {
   return fetchApi<T>(url, {
-    ...options,
     method: 'POST',
+    ...options,
     body: JSON.stringify(body),
     cache: 'no-store',
   });

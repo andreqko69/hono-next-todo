@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import useSWRMutation from 'swr/mutation';
 import { z } from 'zod';
 
 import Link from '@/client/components/Link/Link';
@@ -20,10 +21,10 @@ import {
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
 import { Spinner } from '@/client/components/ui/spinner';
+import { signIn } from '@/client/features/auth/api/mutations';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
-import { postApi } from '@/client/lib/fetch-api';
-import { CustomAPIError } from '@/client/utils/errors';
+import ErrorHandler from '@/client/lib/ErrorHandler';
 import {
   Route,
   SearchParamKey,
@@ -47,12 +48,14 @@ const SignInForm = () => {
     },
   });
 
+  const { trigger } = useSWRMutation('/api/v1/auth/login', signIn);
+
   useEffect(() => {
     const status = searchParams.get(SearchParamKey.Status);
 
     if (status === StatusValue.SignupSuccess) {
       toast({
-        title: 'Signup successful!',
+        title: 'Sign up successful!',
         description: 'You can now login with your credentials.',
         variant: 'default',
       });
@@ -63,31 +66,9 @@ const SignInForm = () => {
     try {
       setIsSubmitting(true);
 
-      await postApi('/api/v1/auth/login', data);
-
-      router.push(
-        `${Route.SignIn}?${SearchParamKey.Status}=${StatusValue.SignupSuccess}`
-      );
+      await trigger(data);
     } catch (error: unknown) {
-      if (error instanceof CustomAPIError) {
-        error.fieldErrors?.forEach((e) => {
-          form.setError(e.fieldName as keyof FormFields, {
-            type: 'server',
-            message: e.message,
-          });
-        });
-
-        return;
-      }
-
-      const description =
-        error instanceof Error ? error.message : 'An unknown error occurred';
-
-      toast({
-        title: 'Error',
-        variant: 'destructive',
-        description,
-      });
+      ErrorHandler.handleFormError({ error, form, toast });
     } finally {
       setIsSubmitting(false);
     }
@@ -179,7 +160,7 @@ const SignInForm = () => {
             <Link text="Create one" href={Route.SignUp} />
           </div>
         </div>
-        <div className="hidden md:flex md:w-[50%]">
+        <div className="hidden md:flex md:w-auto">
           <Image
             className="w-full"
             src="/images/auth/sign-in.png"
