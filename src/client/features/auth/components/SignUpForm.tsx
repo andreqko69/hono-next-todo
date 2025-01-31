@@ -23,7 +23,6 @@ import { Label } from '@/client/components/ui/label';
 import { Spinner } from '@/client/components/ui/spinner';
 import { signUp } from '@/client/features/auth/api/mutations';
 import FormContainer from '@/client/features/auth/components/FormContainer';
-import { useToast } from '@/client/hooks/use-toast';
 import ErrorHandler from '@/client/lib/ErrorHandler';
 import {
   Route,
@@ -37,7 +36,6 @@ type FormFields = z.infer<typeof signUpSchema>;
 const SignUpForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const form = useForm<FormFields>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -62,7 +60,7 @@ const SignUpForm = () => {
         `${Route.SignIn}?${SearchParamKey.Status}=${StatusValue.SignupSuccess}`
       );
     } catch (error: unknown) {
-      ErrorHandler.handleFormError({ error, form, toast });
+      ErrorHandler.handleFormError({ error, form });
     } finally {
       setIsSubmitting(false);
     }

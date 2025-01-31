@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWRMutation from 'swr/mutation';
@@ -32,10 +32,7 @@ import {
 } from '@/shared/navigation/constants';
 import { signInSchema } from '@/shared/validation/auth/schema';
 
-type FormFields = z.infer<typeof signInSchema>;
-
 const SignInForm = () => {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -68,7 +65,7 @@ const SignInForm = () => {
 
       await trigger(data);
     } catch (error: unknown) {
-      ErrorHandler.handleFormError({ error, form, toast });
+      ErrorHandler.handleFormError({ error, form });
     } finally {
       setIsSubmitting(false);
     }
