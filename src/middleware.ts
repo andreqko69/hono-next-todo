@@ -1,17 +1,33 @@
-import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { Route } from '@/shared/navigation/constants';
 
-export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get('currentUser')?.value;
-  const path = request.nextUrl.pathname;
-  const isSignIn = path.startsWith(Route.SignIn);
-  const isSignUp = path.startsWith(Route.SignUp);
-  const isAuth = isSignIn || isSignUp;
+export async function middleware(req: NextRequest) {
+  const token = await getToken({
+    req: req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-  if (!currentUser && !isAuth) {
-    return Response.redirect(new URL(Route.SignIn, request.url));
+  console.log('token:', token);
+  const path = req.nextUrl.pathname;
+  const isSignInPage = path.startsWith(Route.SignIn);
+  const isSignUpPage = path.startsWith(Route.SignUp);
+  const isAuthPage = isSignInPage || isSignUpPage;
+
+  if (isAuthPage) {
+    if (token) {
+      return Response.redirect(new URL(Route.Dashboard, req.url));
+    }
+
+    return NextResponse.next();
   }
+
+  if (!token && !isAuthPage) {
+    return Response.redirect(new URL(Route.SignIn, req.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

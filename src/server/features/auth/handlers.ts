@@ -10,8 +10,6 @@ const createAuthHandlers = () => {
     const body = await c.req.json();
     const parsedBody = signInSchema.parse(body);
 
-    const user = await authService.signIn(parsedBody);
-    console.log('user:', user);
     return c.text('Hello');
   });
 

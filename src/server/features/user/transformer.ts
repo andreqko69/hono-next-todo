@@ -8,7 +8,7 @@ export class Transformer {
       lastName: user.lastName,
       email: user.email,
       createdAt: user.createdAt,
-      isActive: user.isActive,
+      deletedAt: user.deletedAt,
     };
   }
 

@@ -1,11 +1,9 @@
-import bcrypt from 'bcrypt';
+import { hash } from 'bcryptjs';
 
-import UserService from '@/server/features/user/service';
+import userService from '@/server/features/user/service';
 import { AuthError } from '@/server/utils/errors';
 import { AuthErrorMessage } from '@/shared/validation/auth/constants';
-import { SignInData, SignUpData } from '@/shared/validation/auth/schema';
-
-const userService = new UserService();
+import { SignUpData } from '@/shared/validation/auth/schema';
 
 class AuthService {
   private readonly saltRounds = 10;
@@ -24,7 +22,7 @@ class AuthService {
       });
     }
 
-    const passwordHash = await bcrypt.hash(password, this.saltRounds);
+    const passwordHash = await hash(password, this.saltRounds);
 
     return userService.create({
       email,
@@ -32,27 +30,6 @@ class AuthService {
       firstName,
       lastName,
     });
-  }
-
-  async signIn(data: SignInData) {
-    const user = await userService.findByEmail(data.email);
-
-    if (!user) {
-      throw new AuthError(AuthErrorMessage.InvalidCredentials);
-    }
-
-    const isValidPassword = await bcrypt.compare(
-      data.password,
-      user.passwordHash
-    );
-
-    if (!isValidPassword) {
-      throw new AuthError(AuthErrorMessage.InvalidCredentials);
-    }
-
-    if (!user.isActive) {
-      throw new AuthError(AuthErrorMessage.AccountIsInactive);
-    }
   }
 }
 

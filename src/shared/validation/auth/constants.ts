@@ -8,5 +8,7 @@ export enum AuthErrorMessage {
   PasswordIsRequired = 'Password is required',
   PasswordMustBeAtLeast8Characters = 'Password must be at least 8 characters',
   InvalidCredentials = 'Invalid credentials',
-  AccountIsInactive = 'Account is inactive',
+  UserIsDeleted = 'User is deleted',
+  UserWithThisEmailDoesNotExist = 'User with this email does not exist',
+  SomethingWentWrongDuringSignIn = 'Something went wrong during sign in',
 }

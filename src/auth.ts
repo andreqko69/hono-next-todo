@@ -1,0 +1,90 @@
+import { compare } from 'bcryptjs';
+import NextAuth, { CredentialsSignin } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { ZodError } from 'zod';
+
+import userService from '@/server/features/user/service';
+import { ExtraExceptionData } from '@/server/utils/errors';
+import { Route } from '@/shared/navigation/constants';
+import { AuthErrorMessage } from '@/shared/validation/auth/constants';
+import { signInSchema } from '@/shared/validation/auth/schema';
+
+class CustomNextAuthError extends CredentialsSignin {
+  constructor(message: string, extraExceptionData?: ExtraExceptionData) {
+    super(message);
+    this.code = JSON.stringify({ message, ...extraExceptionData });
+  }
+}
+
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
+  providers: [
+    Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        try {
+          const { email, password } =
+            await signInSchema.parseAsync(credentials);
+
+          const user = await userService.findByEmail(email);
+
+          if (!user) {
+            throw new CustomNextAuthError(
+              AuthErrorMessage.UserWithThisEmailDoesNotExist,
+              {
+                fieldErrors: [
+                  {
+                    fieldName: 'email',
+                    message: AuthErrorMessage.UserWithThisEmailDoesNotExist,
+                  },
+                ],
+              }
+            );
+          }
+
+          const isValidPassword = await compare(password, user.passwordHash);
+
+          if (!isValidPassword) {
+            throw new CustomNextAuthError(AuthErrorMessage.InvalidCredentials);
+          }
+
+          if (user.deletedAt) {
+            throw new CustomNextAuthError(AuthErrorMessage.UserIsDeleted);
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+          };
+        } catch (error: unknown) {
+          if (error instanceof ZodError) {
+            throw new CustomNextAuthError(AuthErrorMessage.InvalidCredentials, {
+              fieldErrors: error.errors.map((err) => ({
+                fieldName: err.path.join('.'),
+                message: err.message,
+              })),
+            });
+          }
+
+          if (error instanceof CustomNextAuthError) {
+            throw error;
+          }
+
+          throw new CustomNextAuthError(
+            AuthErrorMessage.SomethingWentWrongDuringSignIn
+          );
+        }
+      },
+    }),
+  ],
+  pages: {
+    signIn: Route.SignIn,
+  },
+});

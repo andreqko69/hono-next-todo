@@ -3,7 +3,7 @@ import { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import { FieldError } from '@/shared/validation/errors';
 
-type ExtraExceptionData = { fieldErrors?: FieldError[] };
+export type ExtraExceptionData = { fieldErrors?: FieldError[] };
 
 export class AppError extends HTTPException {
   constructor(

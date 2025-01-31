@@ -1,5 +1,7 @@
 import { FieldError } from '@/shared/validation/errors';
 
+export type NextAuthErrorData = { message: string; fieldErrors?: FieldError[] };
+
 export class CustomAPIError extends Error {
   constructor(
     message: string,

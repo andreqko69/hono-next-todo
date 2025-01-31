@@ -19,7 +19,7 @@ export const signUpSchema = insertUserSchema
     id: true,
     passwordHash: true,
     createdAt: true,
-    isActive: true,
+    deletedAt: true,
   })
   .extend({
     password: passwordSchema,
@@ -40,7 +40,6 @@ export const signInSchema = z.object({
     .toLowerCase()
     .trim(),
   password: z.string().min(6, AuthErrorMessage.PasswordIsRequired),
-  rememberMe: z.boolean().optional().default(false),
 });
 
 export const passwordResetRequestSchema = z.object({

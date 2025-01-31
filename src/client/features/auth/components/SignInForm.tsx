@@ -1,16 +1,15 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import useSWRMutation from 'swr/mutation';
 import { z } from 'zod';
 
 import Link from '@/client/components/Link/Link';
 import { Button } from '@/client/components/ui/button';
-import { Checkbox } from '@/client/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -19,9 +18,7 @@ import {
   FormMessage,
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
-import { Label } from '@/client/components/ui/label';
 import { Spinner } from '@/client/components/ui/spinner';
-import { signIn } from '@/client/features/auth/api/mutations';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
 import ErrorHandler from '@/client/lib/ErrorHandler';
@@ -33,19 +30,17 @@ import {
 import { signInSchema } from '@/shared/validation/auth/schema';
 
 const SignInForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   });
-
-  const { trigger } = useSWRMutation('/api/v1/auth/login', signIn);
 
   useEffect(() => {
     const status = searchParams.get(SearchParamKey.Status);
@@ -63,7 +58,14 @@ const SignInForm = () => {
     try {
       setIsSubmitting(true);
 
-      await trigger(data);
+      const res = await signIn('credentials', {
+        ...data,
+        redirect: false,
+      });
+
+      ErrorHandler.throwErrorFromNextAuthResponse(res);
+
+      router.push(Route.Dashboard);
     } catch (error: unknown) {
       ErrorHandler.handleFormError({ error, form });
     } finally {
@@ -115,25 +117,6 @@ const SignInForm = () => {
                         {form.formState.errors.password.message}
                       </FormMessage>
                     )}
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="rememberMe"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          id="remember-me"
-                        />
-                        <Label htmlFor="remember-me">Remember me</Label>
-                      </div>
-                    </FormControl>
                   </FormItem>
                 )}
               />
