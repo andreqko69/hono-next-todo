@@ -9,6 +9,9 @@ import { Route } from '@/shared/navigation/constants';
 import { AuthErrorMessage } from '@/shared/validation/auth/constants';
 import { signInSchema } from '@/shared/validation/auth/schema';
 
+const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
+const UPDATE_AGE = 60 * 60; // 1 hour
+
 class CustomNextAuthError extends CredentialsSignin {
   constructor(message: string, extraExceptionData?: ExtraExceptionData) {
     super(message);
@@ -86,5 +89,13 @@ export const {
   ],
   pages: {
     signIn: Route.SignIn,
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: MAX_AGE,
+    updateAge: UPDATE_AGE,
+  },
+  jwt: {
+    maxAge: MAX_AGE,
   },
 });

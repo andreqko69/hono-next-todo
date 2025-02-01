@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -20,7 +21,6 @@ import {
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
-import { Spinner } from '@/client/components/ui/spinner';
 import { signUp } from '@/client/features/auth/api/mutations';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import ErrorHandler from '@/client/lib/ErrorHandler';
@@ -209,7 +209,7 @@ const SignUpForm = () => {
                   variant="default"
                   className="w-full"
                 >
-                  {isSubmitting && <Spinner size="sm" />}
+                  {isSubmitting && <Loader2 className="animate-spin" />}
                   Register
                 </Button>
               </div>

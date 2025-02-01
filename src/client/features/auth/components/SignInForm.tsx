@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -18,7 +19,6 @@ import {
   FormMessage,
 } from '@/client/components/ui/form';
 import { Input } from '@/client/components/ui/input';
-import { Spinner } from '@/client/components/ui/spinner';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
 import ErrorHandler from '@/client/lib/ErrorHandler';
@@ -128,7 +128,7 @@ const SignInForm = () => {
                   variant="default"
                   className="w-full"
                 >
-                  {isSubmitting && <Spinner size="sm" />}
+                  {isSubmitting && <Loader2 className="animate-spin" />}
                   Login
                 </Button>
               </div>

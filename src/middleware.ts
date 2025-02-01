@@ -9,7 +9,6 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  console.log('token:', token);
   const path = req.nextUrl.pathname;
   const isSignInPage = path.startsWith(Route.SignIn);
   const isSignUpPage = path.startsWith(Route.SignUp);

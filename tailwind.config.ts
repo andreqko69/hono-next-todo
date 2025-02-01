@@ -14,16 +14,22 @@ export default {
       },
       colors: {
         // background
-        'color-bg-main': '#ffffff',
+        'color-bg-primary': '#ffffff',
         'color-bg-secondary': '#ff6767',
-        'color-bg-secondary-hover': '#e85555',
+        'color-bg-header': '#f8f8f8',
         // text
         'color-text-primary': '#000000',
         'color-text-secondary': '#f8f9fb',
         'color-text-link': '#008bd9',
+        'color-text-accent': '#ff6767',
+        'color-text-lightblue': '#3abeff',
         // border
         'color-border-primary': '#565454',
         'color-border-primary-active': '#ff6767',
+        // button
+        'color-button-bg-primary': '#ffffff',
+        'color-button-bg-secondary': '#ff6767',
+        'color-button-bg-secondary-hover': '#e85555',
       },
       fontSize: {
         xs: '0.75rem', // 12px

@@ -6,7 +6,7 @@ const FormContainer = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="rounded mx-auto bg-color-bg-main p-8 w-full max-w-[1000px]">
+    <div className="rounded mx-auto bg-color-bg-primary p-8 w-full max-w-[1000px]">
       {children}
     </div>
   );
