@@ -1,6 +1,6 @@
 import React from 'react';
 
-import HeaderActions from '@/client/components/layout/components/HeaderActions';
+import HeaderActions from '@/client/components/layout/Header/HeaderActions';
 import Logo from '@/client/components/Logo/Logo';
 import TodosSearchBar from '@/client/features/todo/components/TodoSearchBar/TodoSearchBar';
 

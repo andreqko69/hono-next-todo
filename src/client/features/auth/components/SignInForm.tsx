@@ -76,7 +76,7 @@ const SignInForm = () => {
   return (
     <FormContainer>
       <div className="flex w-full">
-        <div className="flex flex-col w-full md:w-[50%] md:max-w-[450px] justify-center gap-4">
+        <div className="flex flex-col w-full md:w-[50%] md:max-w-[450px] md:min-w-[300px] justify-center gap-4">
           <h2 className="text-4xl font-bold">Sign In</h2>
           <Form {...form}>
             <form
@@ -140,7 +140,7 @@ const SignInForm = () => {
             <Link text="Create one" href={Route.SignUp} />
           </div>
         </div>
-        <div className="hidden md:flex md:w-auto">
+        <div className="hidden md:flex md:w-full md:max-w-[500px] justify-center">
           <Image
             className="w-full"
             src="/images/auth/sign-in.png"

@@ -98,4 +98,22 @@ export const {
   jwt: {
     maxAge: MAX_AGE,
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.id && user?.email) {
+        token.id = user.id;
+        token.email = user.email;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.id && token.email) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+      }
+
+      return session;
+    },
+  },
 });

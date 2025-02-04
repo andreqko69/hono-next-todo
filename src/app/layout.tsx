@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
         className={`${montserrat.variable} font-montserrat antialiased text-base`}
       >
-        <main>{children}</main>
+        {children}
 
         <Toaster />
       </body>

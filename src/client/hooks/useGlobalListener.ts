@@ -14,8 +14,7 @@ const useGlobalListener = (
     return () => {
       controller.abort();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [eventName, handler]);
 };
 
 export default useGlobalListener;
