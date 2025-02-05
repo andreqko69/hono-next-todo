@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    env_file: ${ENV_FILE:-.env.development}
+    build:
+      context: .
+      target: ${TARGET:-dev}  # Use 'dev' by default, override with TARGET=runner for prod
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://${APP_USER}:${APP_PASSWORD}@db:5432/${APP_DB}
+      - NODE_ENV=${NODE_ENV:-development}
+    volumes:
+      - .:/app  # Mount source code for development
+      - /app/node_modules  # Don't override node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  db:
+    env_file: ${ENV_FILE:-.env.development}
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '[p]ostgres' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+
+networks:
+  app-network:
+    driver: bridge

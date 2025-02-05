@@ -5,6 +5,6 @@ CREATE TABLE "users" (
 	"email" varchar(255) NOT NULL,
 	"password_hash" text NOT NULL,
 	"created_at" timestamp DEFAULT now(),
-	"deletedAt" timestamp,
+	"deleted_at" timestamp,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );

@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node .scripts/run-migrations.mjs && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "drizzle-kit:push": "npx drizzle-kit push",
     "drizzle-kit:generate": "npx drizzle-kit generate",
-    "drizzle-kit:migrate": "npx drizzle-kit migrate"
+    "drizzle-kit:migrate": "npx drizzle-kit migrate",
+    "docker:dev": "ENV_FILE=.env.development docker compose up"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
