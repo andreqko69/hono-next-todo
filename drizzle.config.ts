@@ -8,6 +8,11 @@ export default defineConfig({
   out: './migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    user: process.env.APP_USER,
+    password: process.env.APP_PASSWORD,
+    database: process.env.APP_DB,
+    host: process.env.APP_HOST,
+    port: 5432,
+    ssl: false,
   },
 });
