@@ -13,9 +13,9 @@ services:
       - APP_PASSWORD=${APP_PASSWORD}
       - APP_DB=${APP_DB}
       - APP_HOST=${APP_HOST}
+      - AUTH_TRUST_HOST=${AUTH_TRUST_HOST}
       - NODE_ENV=${NODE_ENV:-development}
     volumes:
-      - .:/app  # Mount source code for development
       - /app/node_modules  # Don't override node_modules
     depends_on:
       db:
