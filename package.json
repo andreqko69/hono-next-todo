@@ -10,7 +10,8 @@
     "drizzle-kit:push": "npx drizzle-kit push",
     "drizzle-kit:generate": "npx drizzle-kit generate",
     "drizzle-kit:migrate": "npx drizzle-kit migrate",
-    "docker:dev": "ENV_FILE=.env.development docker compose up"
+    "docker:run-dev": "docker compose --env-file .env.development up",
+    "docker:run-prod": "docker compose --env-file .env.production up"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
