@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "docker:run-dev": "docker compose --env-file .env.development up",
-    "docker:run-prod": "docker compose --env-file .env.production up"
+    "docker:run": "docker compose up"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
