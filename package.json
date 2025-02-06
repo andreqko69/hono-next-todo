@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "docker:run": "docker compose up --build"
+    "docker:run": "docker compose up --build -d"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
