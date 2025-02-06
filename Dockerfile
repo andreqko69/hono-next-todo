@@ -49,8 +49,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
+RUN node .scripts/run-migrations.mjs
+
 EXPOSE 3000
 
 ENV PORT=3000
 
-CMD HOSTNAME="0.0.0.0" node .scripts/run-migrations.mjs && node server.js
+CMD HOSTNAME="0.0.0.0" node server.js
