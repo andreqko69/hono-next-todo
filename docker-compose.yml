@@ -17,6 +17,8 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
     volumes:
       - /app/node_modules  # Don't override node_modules
+      - .next:/app/.next  # Ensure Next.js build is persisted
+      - ./public:/app/public  # Ensure public files are shared
     depends_on:
       db:
         condition: service_healthy
