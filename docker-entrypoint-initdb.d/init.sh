@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo "Initializing database..."
+
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
     -- Create user if not exists
     DO \$\$
@@ -26,3 +28,5 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "${APP_DB}" <<-EOSQ
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO ${APP_USER};
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO ${APP_USER};
 EOSQL
+
+echo "Database initialized!"

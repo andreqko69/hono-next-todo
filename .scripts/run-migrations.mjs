@@ -20,6 +20,6 @@ const migrateDb = async () => {
 };
 
 migrateDb().catch((err) => {
-  console.error('Migration failed!', err);
+  console.error('Migrations failed!', err);
   process.exit(1);
 });

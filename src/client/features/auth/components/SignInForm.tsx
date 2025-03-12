@@ -54,6 +54,10 @@ const SignInForm = () => {
     }
   }, [searchParams, toast]);
 
+  const handleFocus = () => {
+    console.log('Focused');
+  };
+
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
     try {
       setIsSubmitting(true);
@@ -89,7 +93,12 @@ const SignInForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="Email" />
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="Email"
+                        onFocus={handleFocus}
+                      />
                     </FormControl>
                     {form.formState.errors.email && (
                       <FormMessage>

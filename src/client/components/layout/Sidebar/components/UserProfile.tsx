@@ -2,9 +2,9 @@ import React from 'react';
 
 import { getCurrentUser } from '@/client/features/user/api/queries';
 
-const UserProfile = () => {
-  const user = getCurrentUser();
-  console.log(user);
+const UserProfile = async () => {
+  const user = await getCurrentUser();
+  console.log('user', user);
 
   return <>Text</>;
 };

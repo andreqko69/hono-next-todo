@@ -4,7 +4,7 @@ import SignInForm from '@/client/features/auth/components/SignInForm';
 
 const page = () => {
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
       <SignInForm />
     </Suspense>
   );
