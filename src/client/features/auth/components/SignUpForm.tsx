@@ -19,6 +19,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/client/components/ui/form';
+import { IconNames } from '@/client/components/ui/icon';
 import { Input } from '@/client/components/ui/input';
 import { Label } from '@/client/components/ui/label';
 import { signUp } from '@/client/features/auth/api/mutations';
@@ -66,6 +67,8 @@ const SignUpForm = () => {
     }
   };
 
+  console.log('IconNames', IconNames);
+
   return (
     <FormContainer>
       <div className="flex w-full gap-14">
@@ -91,7 +94,11 @@ const SignUpForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} placeholder="First name" />
+                      <Input
+                        {...field}
+                        iconName={IconNames.EditNameSolid}
+                        placeholder="First name"
+                      />
                     </FormControl>
                     {form.formState.errors.firstName && (
                       <FormMessage>
@@ -108,7 +115,11 @@ const SignUpForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} placeholder="Last name" />
+                      <Input
+                        {...field}
+                        iconName={IconNames.EditNameOutlined}
+                        placeholder="Last name"
+                      />
                     </FormControl>
                     {form.formState.errors.lastName && (
                       <FormMessage>
@@ -125,7 +136,12 @@ const SignUpForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="Email" />
+                      <Input
+                        {...field}
+                        iconName={IconNames.LetterSolid}
+                        type="email"
+                        placeholder="Email"
+                      />
                     </FormControl>
                     {form.formState.errors.email && (
                       <FormMessage>
@@ -144,6 +160,7 @@ const SignUpForm = () => {
                     <FormControl>
                       <Input
                         {...field}
+                        iconName={IconNames.LockSolid}
                         type="password"
                         placeholder="Password"
                       />
@@ -165,6 +182,7 @@ const SignUpForm = () => {
                     <FormControl>
                       <Input
                         {...field}
+                        iconName={IconNames.LockOutlined}
                         type="password"
                         placeholder="Confirm password"
                       />

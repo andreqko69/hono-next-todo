@@ -18,6 +18,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/client/components/ui/form';
+import { IconNames } from '@/client/components/ui/icon';
 import { Input } from '@/client/components/ui/input';
 import FormContainer from '@/client/features/auth/components/FormContainer';
 import { useToast } from '@/client/hooks/use-toast';
@@ -95,6 +96,7 @@ const SignInForm = () => {
                     <FormControl>
                       <Input
                         {...field}
+                        iconName={IconNames.LetterSolid}
                         type="email"
                         placeholder="Email"
                         onFocus={handleFocus}
@@ -117,6 +119,7 @@ const SignInForm = () => {
                     <FormControl>
                       <Input
                         {...field}
+                        iconName={IconNames.LockSolid}
                         type="password"
                         placeholder="Password"
                       />

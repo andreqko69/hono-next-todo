@@ -1,7 +1,15 @@
 import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
 
-config({ path: '.env.development' });
+let envFile = '.env.development'; // Default
+
+if (process.env.NODE_ENV === 'production') {
+  envFile = '.env.production';
+} else if (process.env.USE_LOCAL === 'true') {
+  envFile = '.env.local';
+}
+
+config({ path: envFile });
 
 export default defineConfig({
   schema: './src/server/lib/drizzle/schema.ts',
@@ -13,6 +21,6 @@ export default defineConfig({
     database: process.env.APP_DB,
     host: process.env.APP_HOST,
     port: 5432,
-    ssl: false,
+    ssl: process.env.NODE_ENV === 'production', // Enable SSL in production
   },
 });

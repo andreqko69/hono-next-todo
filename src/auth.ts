@@ -80,6 +80,8 @@ export const {
             throw error;
           }
 
+          console.error(error);
+
           throw new CustomNextAuthError(
             AuthErrorMessage.SomethingWentWrongDuringSignIn
           );
