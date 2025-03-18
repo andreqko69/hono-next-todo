@@ -1,19 +1,23 @@
 import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
 
-let envFile = '.env.development'; // Default
+let envFile = '.env.local'; // Default
 
 if (process.env.NODE_ENV === 'production') {
-  envFile = '.env.production';
+  config({ path: '.env.production' });
 } else if (process.env.USE_LOCAL === 'true') {
-  envFile = '.env.local';
+  const { error } = config({ path: '.env.local' });
+
+  if (error) {
+    config({ path: '.env.development' });
+  }
 }
 
 config({ path: envFile });
 
 export default defineConfig({
   schema: './src/server/lib/drizzle/schema.ts',
-  out: './migrations',
+  out: './src/server/lib/drizzle/migrations',
   dialect: 'postgresql',
   dbCredentials: {
     user: process.env.APP_USER,
@@ -21,6 +25,6 @@ export default defineConfig({
     database: process.env.APP_DB,
     host: process.env.APP_HOST,
     port: 5432,
-    ssl: process.env.NODE_ENV === 'production', // Enable SSL in production
+    ssl: false, // Enable SSL in production
   },
 });

@@ -1,8 +1,10 @@
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { compare } from 'bcryptjs';
 import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { ZodError } from 'zod';
 
+import db from './server/lib/drizzle';
 import userService from '@/server/features/user/service';
 import { ExtraExceptionData } from '@/server/utils/errors';
 import { Route } from '@/shared/navigation/constants';
@@ -25,6 +27,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  adapter: DrizzleAdapter(db),
   providers: [
     Credentials({
       credentials: {
@@ -119,4 +122,5 @@ export const {
     },
   },
   trustHost: true,
+  debug: isDevelopment,
 });

@@ -1,1 +1,7 @@
-export { users } from '@/server/features/user/schema';
+export {
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
+  authenticators,
+} from '@/server/features/user/schema';

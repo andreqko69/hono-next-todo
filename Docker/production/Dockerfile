@@ -37,10 +37,6 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/migrations ./migrations
-COPY --from=builder --chown=nextjs:nodejs /app/.scripts ./.scripts
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/dotenv ./node_modules/dotenv
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
