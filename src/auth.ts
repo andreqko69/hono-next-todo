@@ -5,10 +5,11 @@ import Credentials from 'next-auth/providers/credentials';
 import { ZodError } from 'zod';
 
 import db from './server/lib/drizzle';
+import { isDevelopment } from './shared/utils/environment';
 import userService from '@/server/features/user/service';
 import { ExtraExceptionData } from '@/server/utils/errors';
 import { Route } from '@/shared/navigation/constants';
-import { AuthErrorMessage } from '@/shared/validation/auth/constants';
+import { AuthErrorMessages } from '@/shared/validation/auth/constants';
 import { signInSchema } from '@/shared/validation/auth/schema';
 
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
@@ -43,12 +44,12 @@ export const {
 
           if (!user) {
             throw new CustomNextAuthError(
-              AuthErrorMessage.UserWithThisEmailDoesNotExist,
+              AuthErrorMessages.UserWithThisEmailDoesNotExist,
               {
                 fieldErrors: [
                   {
                     fieldName: 'email',
-                    message: AuthErrorMessage.UserWithThisEmailDoesNotExist,
+                    message: AuthErrorMessages.UserWithThisEmailDoesNotExist,
                   },
                 ],
               }
@@ -58,11 +59,11 @@ export const {
           const isValidPassword = await compare(password, user.passwordHash);
 
           if (!isValidPassword) {
-            throw new CustomNextAuthError(AuthErrorMessage.InvalidCredentials);
+            throw new CustomNextAuthError(AuthErrorMessages.InvalidCredentials);
           }
 
           if (user.deletedAt) {
-            throw new CustomNextAuthError(AuthErrorMessage.UserIsDeleted);
+            throw new CustomNextAuthError(AuthErrorMessages.UserIsDeleted);
           }
 
           return {
@@ -71,12 +72,15 @@ export const {
           };
         } catch (error: unknown) {
           if (error instanceof ZodError) {
-            throw new CustomNextAuthError(AuthErrorMessage.InvalidCredentials, {
-              fieldErrors: error.errors.map((err) => ({
-                fieldName: err.path.join('.'),
-                message: err.message,
-              })),
-            });
+            throw new CustomNextAuthError(
+              AuthErrorMessages.InvalidCredentials,
+              {
+                fieldErrors: error.errors.map((err) => ({
+                  fieldName: err.path.join('.'),
+                  message: err.message,
+                })),
+              }
+            );
           }
 
           if (error instanceof CustomNextAuthError) {
@@ -86,7 +90,7 @@ export const {
           console.error(error);
 
           throw new CustomNextAuthError(
-            AuthErrorMessage.SomethingWentWrongDuringSignIn
+            AuthErrorMessages.SomethingWentWrongDuringSignIn
           );
         }
       },
@@ -94,6 +98,7 @@ export const {
   ],
   pages: {
     signIn: Route.SignIn,
+    error: Route.Error,
   },
   session: {
     strategy: 'jwt',

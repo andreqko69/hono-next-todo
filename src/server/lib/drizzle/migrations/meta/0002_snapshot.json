@@ -1,6 +1,6 @@
 {
-  "id": "f9fd6131-85cb-4162-9c28-2134174f9fb8",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "2635b6e2-b675-4f4f-bbf6-9fa683002ad4",
+  "prevId": "e3361369-32df-4484-81b0-395cc707b0ca",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -236,18 +236,6 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "varchar(40)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "last_name": {
-          "name": "last_name",
-          "type": "varchar(40)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "email": {
           "name": "email",
           "type": "varchar(255)",
@@ -296,8 +284,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.verificationToken": {
-      "name": "verificationToken",
+    "public.verification_token": {
+      "name": "verification_token",
       "schema": "",
       "columns": {
         "identifier": {

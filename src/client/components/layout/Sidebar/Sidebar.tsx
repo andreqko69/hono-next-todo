@@ -5,7 +5,6 @@ import UserProfile from '@/client/components/layout/Sidebar/components/UserProfi
 
 const Sidebar = async () => {
   const session = await auth();
-  console.log('session:', session);
 
   return (
     <aside>

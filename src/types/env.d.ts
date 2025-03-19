@@ -3,10 +3,10 @@ declare namespace NodeJS {
     POSTGRES_USER: string;
     POSTGRES_PASSWORD: string;
     POSTGRES_DB: string;
-    APP_USER: string;
-    APP_PASSWORD: string;
-    APP_DB: string;
-    APP_HOST: string;
+    DB_USER: string;
+    DB_PASSWORD: string;
+    DB_HOST: string;
+    DB_NAME: string;
     NEXTAUTH_URL: string;
     NEXTAUTH_SECRET: string;
   }

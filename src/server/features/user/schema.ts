@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   boolean,
   integer,
@@ -12,8 +13,6 @@ import type { AdapterAccountType } from 'next-auth/adapters';
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
-  firstName: varchar('first_name', { length: 40 }).notNull(),
-  lastName: varchar('last_name', { length: 40 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   passwordHash: text('password_hash').notNull(),
@@ -24,6 +23,26 @@ export const users = pgTable('users', {
 export type Users = typeof users;
 export type DbUser = typeof users.$inferSelect;
 export type DbUserInsert = typeof users.$inferInsert;
+
+export const profiles = pgTable('profiles', {
+  userId: uuid('user_id')
+    .primaryKey()
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(),
+  firstName: varchar('first_name', { length: 40 }).notNull(),
+  lastName: varchar('last_name', { length: 40 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export type Profile = typeof profiles;
+export type DbProfile = typeof profiles.$inferSelect;
+export type DbProfileInsert = typeof profiles.$inferInsert;
 
 export const accounts = pgTable(
   'account',
@@ -60,7 +79,7 @@ export const sessions = pgTable('session', {
 });
 
 export const verificationTokens = pgTable(
-  'verificationToken',
+  'verification_token',
   {
     identifier: text('identifier').notNull(),
     token: text('token').notNull(),
@@ -97,3 +116,17 @@ export const authenticators = pgTable(
     },
   ]
 );
+
+export const userRelations = relations(users, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [users.id],
+    references: [profiles.userId],
+  }),
+}));
+
+export const profileRelations = relations(profiles, ({ one }) => ({
+  user: one(users, {
+    fields: [profiles.userId],
+    references: [users.id],
+  }),
+}));

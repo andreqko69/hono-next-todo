@@ -2,12 +2,13 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
 import * as schema from './schema';
+import config from '@/config';
 
 const pool = new Pool({
-  user: process.env.APP_USER,
-  password: process.env.APP_PASSWORD,
-  database: process.env.APP_DB,
-  host: process.env.APP_HOST,
+  user: config.db.user,
+  password: config.db.password,
+  host: config.db.host,
+  database: config.db.database,
   port: 5432,
   ssl: false,
 });

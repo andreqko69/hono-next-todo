@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Club, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -35,7 +35,6 @@ import { signUpSchema } from '@/shared/validation/auth/schema';
 type FormFields = z.infer<typeof signUpSchema>;
 
 const SignUpForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<FormFields>({
     resolver: zodResolver(signUpSchema),
@@ -53,8 +52,6 @@ const SignUpForm = () => {
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     try {
-      setIsSubmitting(true);
-
       await trigger(data);
 
       router.push(
@@ -62,12 +59,8 @@ const SignUpForm = () => {
       );
     } catch (error: unknown) {
       ErrorHandler.handleFormError({ error, form });
-    } finally {
-      setIsSubmitting(false);
     }
   };
-
-  console.log('IconNames', IconNames);
 
   return (
     <FormContainer>
@@ -222,12 +215,14 @@ const SignUpForm = () => {
 
               <div>
                 <Button
-                  disabled={isSubmitting}
+                  disabled={form.formState.isSubmitting}
                   type="submit"
                   variant="default"
                   className="w-full"
                 >
-                  {isSubmitting && <Loader2 className="animate-spin" />}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="animate-spin" />
+                  )}
                   Register
                 </Button>
               </div>

@@ -11,7 +11,6 @@ export const users = pgTable("users", {
 	passwordHash: text("password_hash").notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	deletedAt: timestamp("deleted_at", { mode: 'string' }),
-	emailVerified: timestamp({ mode: 'string' }),
 }, (table) => [
 	unique("users_email_unique").on(table.email),
 ]);

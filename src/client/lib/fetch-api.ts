@@ -13,7 +13,7 @@ export type FetchOptions = {
 
 async function fetchApi<T>(url: string, options?: FetchOptions): Promise<T> {
   const {
-    cache = 'force-cache',
+    cache = 'no-store',
     revalidate,
     tags,
     headers = {},

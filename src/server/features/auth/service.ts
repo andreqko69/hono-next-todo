@@ -2,7 +2,7 @@ import { hash } from 'bcryptjs';
 
 import userService from '@/server/features/user/service';
 import { AuthError } from '@/server/utils/errors';
-import { AuthErrorMessage } from '@/shared/validation/auth/constants';
+import { AuthErrorMessages } from '@/shared/validation/auth/constants';
 import { SignUpData } from '@/shared/validation/auth/schema';
 
 class AuthService {
@@ -12,10 +12,10 @@ class AuthService {
     const existingUser = await userService.findByEmail(email);
 
     if (existingUser) {
-      throw new AuthError(AuthErrorMessage.UserWithThisEmailAlreadyExists, {
+      throw new AuthError(AuthErrorMessages.UserWithThisEmailAlreadyExists, {
         fieldErrors: [
           {
-            message: AuthErrorMessage.UserWithThisEmailAlreadyExists,
+            message: AuthErrorMessages.UserWithThisEmailAlreadyExists,
             fieldName: 'email',
           },
         ],
@@ -25,10 +25,14 @@ class AuthService {
     const passwordHash = await hash(password, this.saltRounds);
 
     return userService.create({
-      email,
-      passwordHash,
-      firstName,
-      lastName,
+      userData: {
+        email,
+        passwordHash,
+      },
+      profileData: {
+        firstName,
+        lastName,
+      },
     });
   }
 }

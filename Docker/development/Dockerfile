@@ -30,7 +30,6 @@ ENV PORT=3000
 # Expose port
 EXPOSE 3000
 
-
 # We don't need to run build for development,
 # as the development server will be started by docker-compose
-CMD node .scripts/run-migrations.mjs && npm run dev
+CMD npm run db:migrate && npm run dev

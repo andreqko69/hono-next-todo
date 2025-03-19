@@ -1,22 +1,53 @@
 import { eq } from 'drizzle-orm';
 
-import { DbUserInsert, users } from '@/server/features/user/schema';
+import {
+  DbProfileInsert,
+  DbUserInsert,
+  profiles,
+  users,
+} from '@/server/features/user/schema';
 import db from '@/server/lib/drizzle';
 
 class UserService {
   private readonly saltRounds = 10;
 
-  create = async (userData: DbUserInsert) => {
-    const userToInsert: DbUserInsert = {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
-      passwordHash: userData.passwordHash,
-    };
+  create = async ({
+    userData,
+    profileData,
+  }: {
+    userData: DbUserInsert;
+    profileData: Omit<DbProfileInsert, 'userId'>;
+  }) => {
+    return db.transaction(async (tx) => {
+      // Create the user
+      const [user] = await tx
+        .insert(users)
+        .values({
+          email: userData.email,
+          passwordHash: userData.passwordHash,
+        })
+        .returning();
 
-    const [dbUser] = await db.insert(users).values(userToInsert).returning();
+      if (!user) {
+        throw new Error('Failed to create user');
+      }
 
-    return dbUser;
+      // Create the profile
+      const [profile] = await tx
+        .insert(profiles)
+        .values({
+          userId: user.id,
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
+        })
+        .returning();
+
+      if (!profile) {
+        throw new Error('Failed to create profile');
+      }
+
+      return { user, profile };
+    });
   };
 
   findByEmail = async (email: string) => {
